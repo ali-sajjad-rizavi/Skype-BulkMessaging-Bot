@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Skype Bulk Messaging Bot"))
         self.label.setText(_translate("MainWindow", "Contacts file:"))
         self.browse_pushButton.setText(_translate("MainWindow", "Browse"))
         self.label_2.setText(_translate("MainWindow", " Password:"))
