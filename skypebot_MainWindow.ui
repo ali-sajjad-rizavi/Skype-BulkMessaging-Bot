@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Skype Bulk Messaging Bot</string>
   </property>
   <property name="windowIcon">
    <iconset>
