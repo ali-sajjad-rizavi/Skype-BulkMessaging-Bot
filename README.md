@@ -1,5 +1,6 @@
 # Skype-BulkMessaging-Bot
 A crossplatform PyQt5 Desktop Application which sends a single message to multiple contacts using Skype API.
+![image](mainwindow-screenshot.jpg)
 
 # How to use?
 Install dependencies for first time only:
