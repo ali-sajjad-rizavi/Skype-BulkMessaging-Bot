@@ -14,12 +14,16 @@ class SkypeMessenger(QtCore.QObject):
 	def sendMessageToContacts(self):
 		self.skypebot.ui.status_label.setText('Status: Signing in to Skype...')
 		try:
-			self.skypeAccount = Skype(self.skypebot.ui.username_lineEdit.text(), self.skypebot.ui.password_lineEdit.text())
+			username = self.skypebot.ui.username_lineEdit.text()
+			password = self.skypebot.ui.password_lineEdit.text()
+			self.skypeAccount = Skype(username, password)
 			self.skypebot.ui.status_label.setText('Status: Sign in successful!')
+			open('login-info.ini', 'w').write(f'{username}\n{password}')
 		except Exception as e:
 			self.skypebot.ui.status_label.setText('Status: Sign in failed!')
 			self.skypebot.showDialog_pyqtSignal.emit('Sign in failed!', 'Could not Sign in to Skype.',
 				'Make sure internet is connected and login info is correct', str(e))
+			self.skypebot.ui.start_pushButton.setEnabled(True)
 			return
 		#--------
 		message = self.skypebot.ui.message_textEdit.toPlainText()
@@ -35,6 +39,7 @@ class SkypeMessenger(QtCore.QObject):
 				open('failed.csv', 'a', encoding='utf-8').write(cid + '\n')
 			count += 1
 		self.skypebot.ui.status_label.setText(f'Status: Completed! {failed_count} failed.')
+		self.skypebot.ui.start_pushButton.setEnabled(True)
 
 
 class SkypeBot(QtCore.QObject):
@@ -51,6 +56,13 @@ class SkypeBot(QtCore.QObject):
 		self.ui.setupUi(self.MainWindow)
 		#
 		self.__connectEvents()
+		if os.path.isfile('login-info.ini'):
+			try:
+				login_info = open('login-info.ini', 'r').read().strip().split('\n')
+				self.ui.username_lineEdit.setText(login_info[0])
+				self.ui.password_lineEdit.setText(login_info[1])
+			except:
+				os.remove('login-info.ini')
 		#
 		self.MainWindow.show()
 		sys.exit(self.app.exec_())
@@ -66,14 +78,18 @@ class SkypeBot(QtCore.QObject):
 		self.ui.contactsFilePath_lineEdit.setText(path)
 
 	def __start_pushButton__onClick(self):
+		self.ui.start_pushButton.setEnabled(False)
 		if self.ui.contactsFilePath_lineEdit.text() == '':
 			self.showDialog('File not selected!', 'Please provide contacts file.')
+			self.ui.start_pushButton.setEnabled(True)
 			return
 		if self.ui.username_lineEdit.text() == '' or self.ui.password_lineEdit.text() == '':
 			self.showDialog('Login details required!', 'Please provide a username and password.')
+			self.ui.start_pushButton.setEnabled(True)
 			return
 		if self.ui.message_textEdit.toPlainText().strip() == '':
 			self.showDialog('Empty message!', 'Message cannot be empty.')
+			self.ui.start_pushButton.setEnabled(True)
 			return
 		#-----
 		try:
@@ -82,6 +98,7 @@ class SkypeBot(QtCore.QObject):
 		except Exception as e:
 			self.showDialog('Error processing contacts file!', 'Something went wrong while reading contacts from file.',
 				'Verify that the contacts file is properly formatted.', str(e))
+			self.ui.start_pushButton.setEnabled(True)
 			return
 		#-----
 		self.skype_messenger = SkypeMessenger(self)
