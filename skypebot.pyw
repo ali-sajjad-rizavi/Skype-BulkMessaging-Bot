@@ -1,5 +1,5 @@
 from threading import Thread
-import sys, os
+import sys, os, time
 from skpy import Skype
 
 from PyQt5.QtWidgets import QMessageBox
@@ -34,6 +34,10 @@ class SkypeMessenger(QtCore.QObject):
 			try:
 				self.skypebot.ui.status_label.setText(f'Status: Sending to {count} of {last}')
 				self.skypeAccount.contacts[cid].chat.sendMsg(message)
+				#
+				waiting_time = self.skypebot.ui.waitingTime_spinBox.value()
+				self.skypebot.ui.status_label.setText(f'Status: Waiting for {waiting_time} seconds...')
+				time.sleep(waiting_time)
 			except Exception as e:
 				failed_count += 1
 				open('failed.csv', 'a', encoding='utf-8').write(cid + '\n')
